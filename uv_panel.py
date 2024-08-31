@@ -45,6 +45,12 @@ class US_PT_UVPanel(bpy.types.Panel):
         # Button to set UV channel as active
         layout.operator("object.set_active_uv_channel", text="Set Active UV Channel")
 
+        layout.operator("object.rename_active_to", text="Rename Active Layer to")
+
+        layout.separator()
+
+        layout.operator("object.clean_uv_channels", text="Clean UV Channels")
+
 # this OPERATOR adds uv channel with certain name
 class US_OT_AddUVChannel(bpy.types.Operator):
     bl_idname = "object.add_uv_channel"
@@ -81,11 +87,35 @@ class US_OT_SetActiveUVChannel(bpy.types.Operator):
         self.report({'INFO'}, f"UV channel '{uv_channel_name}' set as active.")
         return {'FINISHED'}
 
+class US_OT_RenameActiveUV(bpy.types.Operator):
+    bl_idname = "object.rename_active_to"
+    bl_label = "Rename active channel"
+    bl_description = "Renames the active UV channel on all selected objects to the specified name."
+
+    def execute(self, context):
+        run_script("UV05_rename_active_channel_to.py", uv_channel_name)
+        self.report({'INFO'}, "UV Channels renamed.")
+        return {'FINISHED'}
+
+
+class US_OT_CleanupUVChannels(bpy.types.Operator):
+    bl_idname = "object.clean_uv_channels"
+    bl_label = "Clean UV Channels"
+    bl_description = "Removes all UV channels except the first and renames it to default name"
+
+    def execute(self, context):
+        run_script("UV04_cleanup_uv_channels.py")
+        self.report({'INFO'}, "UV Channels Cleaned up.")
+        return {'FINISHED'}
+
+
 def register():
     bpy.utils.register_class(US_PT_UVPanel)
     bpy.utils.register_class(US_OT_AddUVChannel)
     bpy.utils.register_class(US_OT_DelUVChannel)
     bpy.utils.register_class(US_OT_SetActiveUVChannel)
+    bpy.utils.register_class(US_OT_CleanupUVChannels)
+    bpy.utils.register_class(US_OT_RenameActiveUV)
     bpy.types.Scene.uv_channel_name = bpy.props.StringProperty(
         name="UV Channel Name",
         default="UVMap02",
@@ -97,4 +127,6 @@ def unregister():
     bpy.utils.unregister_class(US_OT_AddUVChannel)
     bpy.utils.unregister_class(US_OT_DelUVChannel)
     bpy.utils.unregister_class(US_OT_SetActiveUVChannel)
+    bpy.utils.unregister_class(US_OT_CleanupUVChannels)
+    bpy.utils.unregister_class(US_OT_RenameActiveUV)
     del bpy.types.Scene.uv_channel_name
