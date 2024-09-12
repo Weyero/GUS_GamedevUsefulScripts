@@ -93,8 +93,9 @@ class US_OT_RenameActiveUV(bpy.types.Operator):
     bl_description = "Renames the active UV channel on all selected objects to the specified name."
 
     def execute(self, context):
+        uv_channel_name = context.scene.uv_channel_name
         run_script("UV05_rename_active_channel_to.py", uv_channel_name)
-        self.report({'INFO'}, "UV Channels renamed.")
+        self.report({'INFO'}, f"UV Channels renamed to '{uv_channel_name}'.")
         return {'FINISHED'}
 
 
